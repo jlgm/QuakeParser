@@ -26,6 +26,10 @@ class Parser
 		lines.each do |line|
 			self.parse_line(line)
 		end
+		self.print_geral_ranking
+	end
+	
+	def print_geral_ranking
 		puts "geral ranking: {"
 		@ranking.sort_by {|_key, value| -value}.each do |key,value|
 			puts "\t" + key.to_s + ": " + value.to_s + "\n"

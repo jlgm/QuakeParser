@@ -60,11 +60,11 @@ class Parser
 	end
 	
 	def process_kill(data)
-		ids = data.match(/\d+ \d+ \d+:/).to_s.split(" ")
+		ids = data.match(/\d+ \d+ \d+/).to_s.split(" ")
 		if (ids[0] == "1022")
-			@game.world_kill(@map[ids[1]])
+			@game.world_kill(@map[ids[1]], ids[2])
 		else
-			@game.kill(@map[ids[0]])
+			@game.kill(@map[ids[0]], ids[2])
 		end
 	end
 	

@@ -5,6 +5,6 @@ Prints a report at the end of every game.
 
 ##How to use
 
-- put the log file on */src/log* with the name ```quake.log```
+- Put the log file on */src/log* with the name ```quake.log```
 - Run with ```ruby parser.rb```
 

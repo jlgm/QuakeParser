@@ -20,14 +20,28 @@ class Parser
 		@map["1022"] = "<world>"
 	end
 	
-	def process_kill(data)
-		ids = data.match(/\d+ \d+ \d+:/).to_s.split(" ")
-		if (ids[0] == "1022")
-			@game.world_kill(@map[ids[1]])
-		else
-			@game.kill(@map[ids[0]])
+	def run
+		lines = @log.split("\n")
+		lines.each do |line|
+			self.parse_line(line)
 		end
+		puts "end"
+	end
+	
+	def parse_line(line)
+		pattern = /\d+:\d+ \w+:/
+		match = pattern.match(line)
+		task = match.to_s.split(" ")[1]
 		
+		if (task == "InitGame:")
+			self.start_game
+		elsif (task == "ClientUserinfoChanged:")
+			self.process_update(match.post_match)
+		elsif (task == "Kill:")
+			self.process_kill(match.post_match)
+		elsif (task == "ShutdownGame:")
+			puts self.print_relatorio
+		end
 	end
 	
 	def process_update(post_match)
@@ -42,38 +56,23 @@ class Parser
 		else
 			@game.new_player(name)
 		end
-		
 		@map[id] = name
+	end
+	
+	def process_kill(data)
+		ids = data.match(/\d+ \d+ \d+:/).to_s.split(" ")
+		if (ids[0] == "1022")
+			@game.world_kill(@map[ids[1]])
+		else
+			@game.kill(@map[ids[0]])
+		end
 	end
 	
 	def print_relatorio
 		@game.print_log
 	end
-	
-	def parse_line(line)
-		pattern = /\d+:\d+ \w+:/
-		match = pattern.match(line)
-		task = match.to_s.split(" ")[1]
-		
-		if (task == "InitGame:")
-			start_game
-		elsif (task == "ClientUserinfoChanged:")
-			process_update(match.post_match)
-		elsif (task == "Kill:")
-			process_kill(match.post_match)
-		elsif (task == "ShutdownGame:")
-			puts print_relatorio
-		end
-		
-	end
-	
-	def run
-		lines = @log.split("\n")
-		lines.each do |line|
-			parse_line(line)
-		end
-		
-		puts "end"
-	end
 
 end
+
+p = Parser.new("log/quake.log")
+p.run

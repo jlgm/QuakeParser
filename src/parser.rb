@@ -11,6 +11,7 @@ class Parser
 		@counter = 0
 		@game = Game.new(0)
 		@map = Hash.new
+		@ranking = Hash.new(0)
 	end
 	
 	def start_game
@@ -25,7 +26,11 @@ class Parser
 		lines.each do |line|
 			self.parse_line(line)
 		end
-		puts "end"
+		puts "geral ranking: {"
+		@ranking.sort_by {|_key, value| -value}.each do |key,value|
+			puts "\t" + key.to_s + ": " + value.to_s + "\n"
+		end
+		puts "}"
 	end
 	
 	def parse_line(line)
@@ -40,6 +45,7 @@ class Parser
 		elsif (task == "Kill:")
 			self.process_kill(match.post_match)
 		elsif (task == "ShutdownGame:")
+			@ranking.update(@game.kills) {|key, oldval, newval| @ranking[key] = oldval + newval }
 			puts self.print_relatorio
 		end
 	end

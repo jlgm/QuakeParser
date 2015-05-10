@@ -4,6 +4,8 @@ require 'json'
 
 class Game  
 
+	attr_accessor :kills
+
 	def initialize(game)
 		@game = game
 		@total_kills = 0

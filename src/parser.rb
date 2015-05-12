@@ -30,11 +30,11 @@ class Parser
 	end
 	
 	def print_geral_ranking
-		puts "geral ranking: {"
+		sorted_ranking = Hash.new
 		@ranking.sort_by {|_key, value| -value}.each do |key,value|
-			puts "\t" + key.to_s + ": " + value.to_s + "\n"
+			sorted_ranking[key] = value
 		end
-		puts "}"
+		puts "global_ranking: " + sorted_ranking.to_json + "\n"
 	end
 	
 	def parse_line(line)

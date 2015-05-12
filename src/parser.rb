@@ -6,6 +6,8 @@ class Parser
 
 	attr_accessor :log
 	
+	WORLD = "1022"
+	
 	def initialize(file)
 		@log = File.read(file)
 		@counter = 0
@@ -18,7 +20,7 @@ class Parser
 		@counter = @counter + 1
 		@game = Game.new(@counter)
 		@map = Hash.new
-		@map["1022"] = "<world>"
+		@map[WORLD] = "<world>"
 	end
 	
 	def run
@@ -71,7 +73,7 @@ class Parser
 	
 	def process_kill(data)
 		ids = data.match(/\d+ \d+ \d+/).to_s.split(" ")
-		if (ids[0] == "1022")
+		if (ids[0] == WORLD)
 			@game.world_kill(@map[ids[1]], ids[2])
 		else
 			@game.kill(@map[ids[0]], ids[2])

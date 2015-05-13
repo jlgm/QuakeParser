@@ -11,7 +11,6 @@ class Parser
 	def initialize(file)
 		@log = File.read(file)
 		@counter = 0
-		@game = Game.new(0)
 		@map = Hash.new
 		@ranking = Hash.new(0)
 	end
@@ -28,7 +27,9 @@ class Parser
 		lines.each do |line|
 			self.parse_line(line)
 		end
-		self.print_geral_ranking
+		@ranking.update(@game.kills) {|key, oldval, newval| @ranking[key] = oldval + newval }
+		puts self.print_relatorio
+		puts self.print_geral_ranking
 	end
 	
 	def print_geral_ranking
@@ -36,7 +37,7 @@ class Parser
 		@ranking.sort_by {|_key, value| -value}.each do |key,value|
 			sorted_ranking[key] = value
 		end
-		puts "global_ranking: " + sorted_ranking.to_json + "\n"
+		"global_ranking: " + JSON.pretty_generate(sorted_ranking) + "\n"
 	end
 	
 	def parse_line(line)
@@ -45,20 +46,21 @@ class Parser
 		task = match.to_s.split(" ")[1]
 		
 		if (task == "InitGame:")
+			if (@game)
+				@ranking.update(@game.kills) {|key, oldval, newval| @ranking[key] = oldval + newval }
+				puts self.print_relatorio
+			end
 			self.start_game
 		elsif (task == "ClientUserinfoChanged:")
-			self.process_update(match.post_match)
+			self.parse_update(match.post_match)
 		elsif (task == "Kill:")
-			self.process_kill(match.post_match)
-		elsif (task == "ShutdownGame:")
-			@ranking.update(@game.kills) {|key, oldval, newval| @ranking[key] = oldval + newval }
-			puts self.print_relatorio
+			self.parse_kill(match.post_match)
 		end
 	end
 	
-	def process_update(post_match)
-		id = post_match.match(/\d+/).to_s
-		post_id = post_match.match(/\d+/).post_match.to_s
+	def parse_update(data)
+		id = data.match(/\d+/).to_s
+		post_id = data.match(/\d+/).post_match.to_s
 		name = post_id.match(/\\.*?\\/).to_s
 		
 		name = name[1..name.length-2]
@@ -71,7 +73,7 @@ class Parser
 		@map[id] = name
 	end
 	
-	def process_kill(data)
+	def parse_kill(data)
 		ids = data.match(/\d+ \d+ \d+/).to_s.split(" ")
 		if (ids[0] == WORLD)
 			@game.world_kill(@map[ids[1]], ids[2])

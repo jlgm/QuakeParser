@@ -28,8 +28,8 @@ class Parser
 			self.parse_line(line)
 		end
 		@ranking.update(@game.kills) {|key, oldval, newval| @ranking[key] = oldval + newval }
-		puts self.print_relatorio
-		puts self.print_geral_ranking
+		self.print_relatorio
+		self.print_geral_ranking
 	end
 	
 	def print_geral_ranking
@@ -37,7 +37,7 @@ class Parser
 		@ranking.sort_by {|_key, value| -value}.each do |key,value|
 			sorted_ranking[key] = value
 		end
-		"global_ranking: " + JSON.pretty_generate(sorted_ranking) + "\n"
+		puts "global_ranking: " + JSON.pretty_generate(sorted_ranking) + "\n"
 	end
 	
 	def parse_line(line)
@@ -48,7 +48,7 @@ class Parser
 		if (task == "InitGame:")
 			if (@game)
 				@ranking.update(@game.kills) {|key, oldval, newval| @ranking[key] = oldval + newval }
-				puts self.print_relatorio
+				self.print_relatorio
 			end
 			self.start_game
 		elsif (task == "ClientUserinfoChanged:")

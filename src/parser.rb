@@ -1,23 +1,25 @@
 #!/usr/bin/env ruby
 
+#converts a quake3 log file into an array of Game objects (@games)
+#
+#author: jlgm
+
 require_relative 'game'
 
 class Parser
 
-	attr_accessor :log
+	attr_accessor :log, :games, :scores
 	
 	WORLD = "1022"
 	
 	def initialize(file)
 		@log = File.read(file)
 		@counter = 0
-		@map = Hash.new
-		@ranking = Hash.new(0)
+		@games = []
 	end
 	
 	def start_game
-		@counter = @counter + 1
-		@game = Game.new(@counter)
+		@games[@counter += 1] = Game.new(@counter)
 		@map = Hash.new
 		@map[WORLD] = "<world>"
 	end
@@ -27,17 +29,6 @@ class Parser
 		lines.each do |line|
 			self.parse_line(line)
 		end
-		@ranking.update(@game.kills) {|key, oldval, newval| @ranking[key] = oldval + newval }
-		self.print_relatorio
-		self.print_geral_ranking
-	end
-	
-	def print_geral_ranking
-		sorted_ranking = Hash.new
-		@ranking.sort_by {|_key, value| -value}.each do |key,value|
-			sorted_ranking[key] = value
-		end
-		puts "global_ranking: " + JSON.pretty_generate(sorted_ranking) + "\n"
 	end
 	
 	def parse_line(line)
@@ -46,10 +37,6 @@ class Parser
 		task = match.to_s.split(" ")[1]
 		
 		if (task == "InitGame:")
-			if (@game)
-				@ranking.update(@game.kills) {|key, oldval, newval| @ranking[key] = oldval + newval }
-				self.print_relatorio
-			end
 			self.start_game
 		elsif (task == "ClientUserinfoChanged:")
 			self.parse_update(match.post_match)
@@ -66,9 +53,9 @@ class Parser
 		name = name[1..name.length-2]
 		
 		if (@map[id])
-			@game.change_player_name(@map[id], name)
+			@games[@counter].change_player_name(@map[id], name)
 		else
-			@game.new_player(name)
+			@games[@counter].new_player(name)
 		end
 		@map[id] = name
 	end
@@ -76,17 +63,11 @@ class Parser
 	def parse_kill(data)
 		ids = data.match(/\d+ \d+ \d+/).to_s.split(" ")
 		if (ids[0] == WORLD)
-			@game.world_kill(@map[ids[1]], ids[2])
+			@games[@counter].world_kill(@map[ids[1]], ids[2])
 		else
-			@game.kill(@map[ids[0]], ids[2])
+			@games[@counter].kill(@map[ids[0]], ids[2])
 		end
 	end
 	
-	def print_relatorio
-		@game.print_log
-	end
-
 end
 
-p = Parser.new("log/quake.log")
-p.run

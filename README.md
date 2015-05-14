@@ -6,5 +6,5 @@ Prints a report at the end of every game and shows a global ranking.
 ##How to use
 
 - Put the log file inside the folder */src/log* with the name ```quake.log```
-- Run with ```ruby parser.rb```
+- Run with ```ruby main.rb```
 

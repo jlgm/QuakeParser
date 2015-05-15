@@ -10,7 +10,7 @@ Prints a report at the end of every game and shows a global ranking.
 
 ##Running tests
 
-- Testers will be in */rspec* 
+- Testers will be in */spec* 
 - Run all of them with the command ```rspec *```
 
 ##Example

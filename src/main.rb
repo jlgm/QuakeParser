@@ -35,6 +35,6 @@ class Main
 	
 end
 
-m = Main.new("log/quake.log")
+m = Main.new("../log/quake.log")
 m.run
 

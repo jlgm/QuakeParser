@@ -8,12 +8,12 @@ require_relative 'game'
 
 class Parser
 
-	attr_accessor :log, :games, :scores
+	attr_accessor :log, :games
 	
 	WORLD = "1022"
 	
-	def initialize(file)
-		@log = File.read(file)
+	def initialize(log)
+		@log = log
 		@counter = 0
 		@games = []
 	end

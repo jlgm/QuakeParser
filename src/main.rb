@@ -5,7 +5,7 @@ require_relative 'parser'
 class Main
 
 	def initialize(file)
-		@parser = Parser.new(file)
+		@parser = Parser.new(File.read(file))
 	end
 	
 	def run

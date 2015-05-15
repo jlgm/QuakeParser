@@ -42,6 +42,9 @@ class Parser
 			self.parse_update(match.post_match)
 		elsif (task == "Kill:")
 			self.parse_kill(match.post_match)
+		elsif (task == "ClientDisconnect:")
+			id = match.post_match.match(/\d+/).to_s
+			@map[id] = nil
 		end
 	end
 	

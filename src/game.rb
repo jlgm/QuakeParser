@@ -22,8 +22,10 @@ class Game
 	end
 
 	def new_player(name)
-		@players.push(name)
-		@kills[name] = 0
+		if (@players.find_index(name) == nil)
+			@players.push(name)
+		end
+		@kills[name] += 0
 	end
 
 	def change_player_name(name, newName)

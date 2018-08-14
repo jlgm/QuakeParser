@@ -2,7 +2,7 @@
 
 #represents a game session in Quake 3 arena.
 #it stores kills, players' names and scores and the reason of all deaths.
-#
+# http://joaomarlonigu.com
 #author: jlgm
 
 require 'json'
